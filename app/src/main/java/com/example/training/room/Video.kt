@@ -10,7 +10,7 @@ data class Video(
     val imageUrl: String,
     val title: String,
     val views: Int,
-    val channelName: String,
-    val channelSubscribers: Int,
-    val channelImgUrl: String
+    val channelName: String
+//    val channelSubscribers: Int,
+//    val channelImgUrl: String
 )

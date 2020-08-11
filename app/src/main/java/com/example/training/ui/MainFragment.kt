@@ -27,6 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainFragment: Fragment(R.layout.main_fragment) {
 
+
     private lateinit var binding: MainFragmentBinding
     private val model: MainViewModel by viewModels()
 
@@ -58,18 +59,19 @@ class MainFragment: Fragment(R.layout.main_fragment) {
 
         // set recycler view
         binding.recyclerView.apply {
-            adapter = MyAdapter(listOf(), requireContext())
+            adapter = MyAdapter(emptyList(), requireContext(), "", "", 0)
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
+
+
+        parseData()
 
         // observe the live data
         model.listOfVideosLiveData.observe(requireActivity(), Observer {
             displayData(it)
         })
 
-
-        parseData()
 
          //pull refresh
         binding.swipeRefresh.setOnRefreshListener {
@@ -86,8 +88,17 @@ class MainFragment: Fragment(R.layout.main_fragment) {
         val adapter = binding.recyclerView.adapter as MyAdapter
         adapter.list = list
         adapter.notifyDataSetChanged()
-
     }
+
+    private fun displayHeader(name: String, subs: Int, imgUrl: String){
+        val adapter = binding.recyclerView.adapter as MyAdapter
+        adapter.channelName = name
+        adapter.channelSubscribers = subs
+        adapter.channelImgUrl = imgUrl
+        adapter.notifyDataSetChanged()
+    }
+
+
 
     private fun parseData(){
         client.newCall(request).enqueue(object : Callback{
@@ -102,8 +113,6 @@ class MainFragment: Fragment(R.layout.main_fragment) {
 
                     val JSONArrayOfVideos = json.getJSONArray("videos")
 
-                    val list = mutableListOf<Video>()
-
                     for (i in 0 until JSONArrayOfVideos.length()){
                         val videoId = JSONArrayOfVideos.getJSONObject(i).getInt("id")
                         val videoImgUrl = JSONArrayOfVideos.getJSONObject(i).getString("imageUrl")
@@ -116,7 +125,11 @@ class MainFragment: Fragment(R.layout.main_fragment) {
                         val subscribers = channel.getInt("numberOfSubscribers")
                         val channelImgUrl = channel.getString("profileImageUrl")
 
-                        val video = Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel, subscribers, channelImgUrl)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            displayHeader(videoChannel, subscribers, channelImgUrl)
+                        }
+
+                        val video = Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel)
                         model.insert(video)
 
                         }
@@ -136,13 +149,17 @@ class MainFragment: Fragment(R.layout.main_fragment) {
 
 
             override fun onFailure(call: Call, e: IOException) {
+                CoroutineScope(Dispatchers.Main).launch {
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefresh.visibility = View.VISIBLE
-                CoroutineScope(Dispatchers.Main).launch {
+
                     Toast.makeText(requireContext(), "$e", Toast.LENGTH_LONG).show()
                 }
             }
         })
     }
+
+
+
 
 }

@@ -8,9 +8,11 @@ import com.example.training.databinding.RecyclerViewHeaderBinding
 import com.example.training.databinding.RecyclerViewItemBinding
 import com.example.training.room.Video
 import com.squareup.picasso.Picasso
+import javax.inject.Inject
 
 
-class MyAdapter(var list: List<Video>, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MyAdapter(var list: List<Video>, private val context: Context, var channelImgUrl: String, var channelName: String, var channelSubscribers: Int)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TYPE_HEADER : Int = 0
     private val TYPE_LIST : Int = 1
@@ -38,28 +40,34 @@ class MyAdapter(var list: List<Video>, private val context: Context) : RecyclerV
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-//        val current = list[position]
+
 
         if(holder is CustomViewHolder){
-            val current = list[position]
-            holder.channelName.text = current.channelName
+            // the error is because we must not pass video instance
 
-            val subscribersInString = getViews(current.channelSubscribers)
+            holder.channelName.text = channelName
+
+            val subscribersInString = getViews(channelSubscribers)
             holder.channelSubscribers.text = "$subscribersInString subscribers"
 
-            Picasso.with(context).load(current.channelImgUrl).into(holder.channelImg)
+            if(channelImgUrl == ""){
+                holder.channelImg.setImageResource(R.drawable.ic_launcher_background)
+            }else {
+                Picasso.with(context).load(channelImgUrl).into(holder.channelImg)
+            }
 
         }
 
         else if(holder is MyViewHolder){
-            val current = list[position - 1]
-        holder.ownerOfTheVideoTextView.text = current.channelName
-        holder.videoTitleTextView.text = current.title
-        Picasso.with(context).load(current.imageUrl).into(holder.videoImg)
+            val currentVideo = list[position - 1]
 
-        val viewsInString = getViews(current.views)
+            holder.ownerOfTheVideoTextView.text = currentVideo.channelName
+            holder.videoTitleTextView.text = currentVideo.title
+            Picasso.with(context).load(currentVideo.imageUrl).into(holder.videoImg)
 
-        holder.videoViewsTextView.text = "$viewsInString views"
+            val viewsInString = getViews(currentVideo.views)
+
+            holder.videoViewsTextView.text = "$viewsInString views"
     }
 
 
