@@ -113,39 +113,31 @@ class MainFragment: Fragment(R.layout.main_fragment) {
                         val channel = JSONArrayOfVideos.getJSONObject(i).getJSONObject("channel")
 
                         val videoChannel = channel.getString("name")
+                        val subscribers = channel.getInt("numberOfSubscribers")
+                        val channelImgUrl = channel.getString("profileImageUrl")
 
-                        val video = Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel)
+                        val video = Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel, subscribers, channelImgUrl)
                         model.insert(video)
 
-
-                        binding.channelName.text = videoChannel
-
-                        val subscribers = channel.getInt("numberOfSubscribers")
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val numOfSubscribers = MyAdapter(emptyList(), requireContext()).getViews(subscribers)
-                            binding.channelSubscribers.text = "$numOfSubscribers subscribers"
-                            Picasso.with(requireContext()).load(video.imageUrl).into(binding.channelImage)
                         }
-
-                    }
 
                     CoroutineScope(Dispatchers.Main).launch {
                         binding.progressBar.visibility = View.GONE
-                        binding.constraintLayout.visibility = View.VISIBLE
+                        binding.swipeRefresh.visibility = View.VISIBLE
                     }
 
-                }
-                catch (e: IOException){
+                } catch (e: IOException){
                     binding.progressBar.visibility = View.GONE
-                    binding.constraintLayout.visibility = View.VISIBLE
+                    binding.swipeRefresh.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), "$e", Toast.LENGTH_LONG).show()
                 }
 
             }
 
+
             override fun onFailure(call: Call, e: IOException) {
                 binding.progressBar.visibility = View.GONE
-                binding.constraintLayout.visibility = View.VISIBLE
+                binding.swipeRefresh.visibility = View.VISIBLE
                 CoroutineScope(Dispatchers.Main).launch {
                     Toast.makeText(requireContext(), "$e", Toast.LENGTH_LONG).show()
                 }
