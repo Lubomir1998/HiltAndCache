@@ -24,5 +24,7 @@ class MainActivity : AppCompatActivity() {
             R.id.fragment
         )
 
+        // this is a test comment
+
     }
 }
