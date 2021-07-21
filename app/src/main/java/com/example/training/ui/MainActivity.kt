@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
 
         // another test comment
 
+        // test comment 2
+
         navController = Navigation.findNavController(this,
             R.id.fragment
         )
