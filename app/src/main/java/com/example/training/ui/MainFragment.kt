@@ -101,19 +101,21 @@ class MainFragment: Fragment(R.layout.main_fragment) {
 
 
     private fun parseData(){
-        client.newCall(request).enqueue(object : Callback{
+        client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
+
 
                 // find video title, views, and so on...
                 // add the video in the database
 
-                val responseData = response.body()?.string()
+                val responseData = response.body?.string()
+
                 try {
                     val json = JSONObject(responseData!!)
 
                     val JSONArrayOfVideos = json.getJSONArray("videos")
 
-                    for (i in 0 until JSONArrayOfVideos.length()){
+                    for (i in 0 until JSONArrayOfVideos.length()) {
                         val videoId = JSONArrayOfVideos.getJSONObject(i).getInt("id")
                         val videoImgUrl = JSONArrayOfVideos.getJSONObject(i).getString("imageUrl")
                         val videoTitle = JSONArrayOfVideos.getJSONObject(i).getString("name")
@@ -129,17 +131,18 @@ class MainFragment: Fragment(R.layout.main_fragment) {
                             displayHeader(videoChannel, subscribers, channelImgUrl)
                         }
 
-                        val video = Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel)
+                        val video =
+                            Video(videoId, videoImgUrl, videoTitle, videoViews, videoChannel)
                         model.insert(video)
 
-                        }
+                    }
 
                     CoroutineScope(Dispatchers.Main).launch {
                         binding.progressBar.visibility = View.GONE
                         binding.swipeRefresh.visibility = View.VISIBLE
                     }
 
-                } catch (e: IOException){
+                } catch (e: IOException) {
                     binding.progressBar.visibility = View.GONE
                     binding.swipeRefresh.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), "$e", Toast.LENGTH_LONG).show()
@@ -150,8 +153,8 @@ class MainFragment: Fragment(R.layout.main_fragment) {
 
             override fun onFailure(call: Call, e: IOException) {
                 CoroutineScope(Dispatchers.Main).launch {
-                binding.progressBar.visibility = View.GONE
-                binding.swipeRefresh.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
+                    binding.swipeRefresh.visibility = View.VISIBLE
 
                     Toast.makeText(requireContext(), "$e", Toast.LENGTH_LONG).show()
                 }

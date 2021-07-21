@@ -18,11 +18,10 @@ class MyAdapter(var list: List<Video>, private val context: Context, var channel
     private val TYPE_LIST : Int = 1
 
     override fun getItemViewType(position: Int): Int {
-        if(position == 0){
-            return TYPE_HEADER
-        }
-        else{
-            return TYPE_LIST
+        return if(position == 0){
+            TYPE_HEADER
+        } else{
+            TYPE_LIST
         }
     }
 
