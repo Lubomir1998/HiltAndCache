@@ -26,15 +26,14 @@ class MyAdapter(var list: List<Video>, private val context: Context, var channel
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == TYPE_LIST) {
+        return if(viewType == TYPE_LIST) {
             val view =
                 RecyclerViewItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return MyViewHolder(view)
-        }
-        else {
+            MyViewHolder(view)
+        } else {
             val view =
                 RecyclerViewHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return CustomViewHolder(view)
+            CustomViewHolder(view)
         }
     }
 
