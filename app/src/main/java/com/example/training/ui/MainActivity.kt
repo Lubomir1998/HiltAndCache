@@ -31,5 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         // this is a test comment
 
+        // this is a commit from newfeature branch
+
     }
 }
